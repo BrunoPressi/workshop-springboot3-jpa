@@ -1,12 +1,15 @@
 package com.compass.uol.course.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,7 +17,7 @@ import jakarta.persistence.Table;
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -23,7 +26,14 @@ public class User implements Serializable {
 	private String fone;
 	private String password;
 
+	private List<Order> orders = new ArrayList<>();
+
 	public User() {
+	}
+
+	@OneToMany(mappedBy = "client")
+	public List<Order> getOrders() {
+		return orders;
 	}
 
 	public User(Long id, String name, String email, String fone, String password) {
