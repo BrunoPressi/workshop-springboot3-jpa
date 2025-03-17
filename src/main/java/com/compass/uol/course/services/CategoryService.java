@@ -1,0 +1,28 @@
+package com.compass.uol.course.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.compass.uol.course.entities.Category;
+import com.compass.uol.course.entities.Order;
+import com.compass.uol.course.repositories.CategoryRepository;
+
+@Service
+public class CategoryService {
+	
+	@Autowired
+	private CategoryRepository repository;
+	
+	public List<Category> findAll() {
+		return repository.findAll();
+	}
+	
+	public Category findById(Long id) {
+		Optional<Category> obj = repository.findById(id);
+		return obj.get();
+	}
+	
+}
