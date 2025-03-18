@@ -20,7 +20,7 @@ public class ProductResource {
 	@Autowired
 	private ProductService productService;
 
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<List<Product>> findAll() {
 		List<Product> p = productService.findAll();
 		return ResponseEntity.ok().body(p);
