@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +18,10 @@ public class SecurityConfig {
 
 	@Bean
 	UserDetailsService userDetailsService() {
-		UserDetails user = User.withUsername("username").password(passwordEncoder().encode("123")).roles("USER")
+		UserDetails user = User.withUsername("username")
+				.password(passwordEncoder()
+				.encode("123"))
+				.roles("USER", "ADMIN")
 				.build();
 		return new InMemoryUserDetailsManager(user); // Cria um usuário na memória
 	}
@@ -30,8 +32,9 @@ public class SecurityConfig {
 	    http
         .csrf(csrf -> csrf.disable()) // Desativa CSRF
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/products/**").authenticated()  // Exige autenticação para /products/**
-            .anyRequest()/*.permitAll()*/)  // Permite acesso a outras rotas
+            .requestMatchers("/products/**").hasRole("ADMIN") // Permite somente o admin acessar a página
+            .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN") // Permite ao usuário que tem alguma dessas roles acessar a página
+            .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN"))
         .formLogin(form -> form
             //.loginPage("/login") // Página personalizada de login
             .permitAll());  // Permite o acesso à página de login sem autenticação
