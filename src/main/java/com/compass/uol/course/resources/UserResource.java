@@ -18,6 +18,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.compass.uol.course.entities.User;
 import com.compass.uol.course.services.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value="/users")
 public class UserResource {
@@ -38,7 +40,7 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<User> insert(@RequestBody User obj) {
+	public ResponseEntity<User> insert(@RequestBody @Valid User obj) {
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).body(obj); 

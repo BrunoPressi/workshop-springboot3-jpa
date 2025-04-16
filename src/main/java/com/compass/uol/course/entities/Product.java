@@ -16,6 +16,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "tb_product")
@@ -26,8 +28,12 @@ public class Product implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotEmpty(message = "{campo.name-product.obrigatorio")
 	private String name;
 	private String description;
+	
+	@NotNull(message = "{campo.preco-product.obrigatorio}")
 	private Double price;
 	private String imgUrl;
 

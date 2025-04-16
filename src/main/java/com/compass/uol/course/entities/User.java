@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "tb_user")
@@ -23,9 +25,17 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotEmpty(message = "{campo.name-user.obrigatorio}")
 	private String name;
+	
+	@NotEmpty(message = "{campo.email-user.obrigatorio}")
+	@Email(message = "{campo.email-user.invalido}")
 	private String email;
+	
 	private String fone;
+	
+	@NotEmpty(message = "{campo.password-user.obrigatorio}")
 	private String password;
 
 	@JsonIgnore

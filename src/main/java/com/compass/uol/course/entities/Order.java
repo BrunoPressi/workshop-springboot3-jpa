@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.compass.uol.course.annotation.NotEmptyList;
 import com.compass.uol.course.entities.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,6 +41,7 @@ public class Order implements Serializable {
 	private User client;
 
 	@OneToMany(mappedBy = "id.order")
+	//@NotEmptyList(message = "Lista de itens do pedido não pode ser vazia")
 	private Set<OrderItem> items = new HashSet<>();
 
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)

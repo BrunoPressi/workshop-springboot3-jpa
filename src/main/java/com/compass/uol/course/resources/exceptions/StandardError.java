@@ -2,6 +2,7 @@ package com.compass.uol.course.resources.exceptions;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -65,5 +66,7 @@ public class StandardError implements Serializable {
 	public void setPath(String path) {
 		this.path = path;
 	}
+
+
 
 }
