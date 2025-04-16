@@ -39,20 +39,18 @@ public class ResourceExceptionHandler {
 		String error = "Argument error";
 		HttpStatus status = HttpStatus.BAD_REQUEST;		
 		
-		List<String> errorMessages = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(fieldError -> fieldError.getDefaultMessage())
-                .collect(Collectors.toList());
-		
-		StringBuilder sb = new StringBuilder();
-		String msg = "";
-		
-		sb.append(String.join(", ", errorMessages));
+	    ValidationError err = new ValidationError(
+	            Instant.now(),
+	            status.value(),
+	            error,
+	            "Erro de validação nos campos.",
+	            request.getRequestURI()
+	    );
 
-		msg = sb.toString();
+	    e.getBindingResult().getFieldErrors().forEach(fieldError ->
+	            err.addError(fieldError.getField(), fieldError.getDefaultMessage())
+	    );
 		
-		StandardError err = new StandardError(Instant.now(), status.value(), error, msg, request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
 }
