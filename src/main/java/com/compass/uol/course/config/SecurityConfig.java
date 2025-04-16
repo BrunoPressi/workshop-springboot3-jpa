@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -29,15 +30,14 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-	    http
-        .csrf(csrf -> csrf.disable()) // Desativa CSRF
-        .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/products/**").hasRole("ADMIN") // Permite somente o admin acessar a página
-            .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN") // Permite ao usuário que tem alguma dessas roles acessar a página
-            .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN"))
-        .formLogin(form -> form
-            //.loginPage("/login") // Página personalizada de login
-            .permitAll());  // Permite o acesso à página de login sem autenticação
+        http
+                .csrf(csrf -> csrf.disable()) // Desativa CSRF
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/products/**").hasRole("ADMIN") // Permite somente o admin acessar a página
+                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN") // Permite ao usuário que tem alguma dessas roles acessar a página
+                        .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN")
+                		.requestMatchers("/h2-console/**").permitAll())
+                .httpBasic(withDefaults());  // Método de autenticação Basic
 
 	    return http.build();
 
