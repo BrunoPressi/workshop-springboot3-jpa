@@ -1,4 +1,4 @@
-package com.compass.uol.course.services;
+package com.compass.uol.course.security.jwt;
 
 import java.security.Key;
 import java.time.Instant;
@@ -74,7 +74,7 @@ public class JwtService {
 		}
 	}
 	
-	public String getUserData(String token) throws ExpiredJwtException{
+	public String getUserEmail(String token) throws ExpiredJwtException{
 		return (String) getClaims(token).getSubject();
 	}
 	
@@ -89,7 +89,7 @@ public class JwtService {
 		System.out.println(token);
 		
 		System.out.println("Token is valid? " + service.tokenIsValid(token));
-		System.out.println("User Data: " + service.getUserData(token));
+		System.out.println("User Data: " + service.getUserEmail(token));
 		
 	}
 	

@@ -7,12 +7,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.compass.uol.course.security.jwt.JwtAuthFilter;
+import com.compass.uol.course.security.jwt.JwtService;
 import com.compass.uol.course.services.UserService;
 
 @Configuration
@@ -25,6 +31,9 @@ public class SecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	private JwtService jwtService;
+	
 	@Bean
 	AuthenticationManager authManager(HttpSecurity http) throws Exception {
 	    AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -36,16 +45,22 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable()) // Desativa CSRF
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/products/**").hasRole("ADMIN") // Permite somente o admin acessar a página
-                        .requestMatchers(HttpMethod.POST , "/users/**").permitAll() // Permite o acesso a todos
-                        .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN") // Permite ao usuário que tem alguma dessas roles acessar a página
+                        .requestMatchers("/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST , "/users/**").permitAll()
+                        .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
-                .httpBasic(withDefaults());  // Método de autenticação Basic
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class));
 
 	    return http.build();
 
+	}
+	
+	@Bean
+	OncePerRequestFilter jwtFilter() {
+		return new JwtAuthFilter(jwtService, userService);
 	}
 
 }

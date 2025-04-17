@@ -8,6 +8,8 @@ import com.compass.uol.course.entities.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	
+	Optional<UserEntity> findByEmail(String email);
 	Optional<UserEntity> findByName(String name);
+
 	
 }

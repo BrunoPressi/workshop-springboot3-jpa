@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.compass.uol.course.entities.UserEntity;
+import com.compass.uol.course.repositories.CustomUserDetailsService;
 import com.compass.uol.course.repositories.UserRepository;
 import com.compass.uol.course.services.exception.DatabaseException;
 import com.compass.uol.course.services.exception.ResourceNotFoundException;
@@ -19,7 +20,7 @@ import com.compass.uol.course.services.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, CustomUserDetailsService {
 
 	@Autowired
 	private UserRepository repository;
@@ -67,9 +68,24 @@ public class UserService implements UserDetailsService {
 	}
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
 		
-		UserEntity user = repository.findByName(username)
+		UserEntity user = repository.findByName(name)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		
+		String[] roles = user.isAdmin() ? new String[] {"ADMIN", "USER"} : new String[] {"USER"};
+		
+		return User
+				.builder()
+				.username(user.getName())
+				.password(user.getPassword())
+				.roles(roles)
+				.build();
+	}
+
+	@Override
+	public UserDetails loadUserByEmail(String email) {
+		UserEntity user = repository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		
 		String[] roles = user.isAdmin() ? new String[] {"ADMIN", "USER"} : new String[] {"USER"};
