@@ -9,12 +9,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.compass.uol.course.entities.UserEntity;
 import com.compass.uol.course.repositories.CustomUserDetailsService;
 import com.compass.uol.course.repositories.UserRepository;
 import com.compass.uol.course.services.exception.DatabaseException;
+import com.compass.uol.course.services.exception.InvalidPasswordException;
 import com.compass.uol.course.services.exception.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,9 @@ public class UserService implements UserDetailsService, CustomUserDetailsService
 
 	@Autowired
 	private UserRepository repository;
+	
+	@Autowired
+	private PasswordEncoder encode;
 
 	public List<UserEntity> findAll() {
 		return repository.findAll();
@@ -96,6 +101,16 @@ public class UserService implements UserDetailsService, CustomUserDetailsService
 				.password(user.getPassword())
 				.roles(roles)
 				.build();
+	}
+	
+	public UserDetails authenticate(UserEntity user) {
+		UserDetails userDataBase = loadUserByEmail(user.getEmail());
+		boolean passwordIsCorrect = encode.matches(user.getPassword(), userDataBase.getPassword());
+		
+		if (passwordIsCorrect) {
+			return userDataBase;
+		}
+		throw new InvalidPasswordException();
 	}
 
 }
