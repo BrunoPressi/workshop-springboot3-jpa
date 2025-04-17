@@ -7,11 +7,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.compass.uol.course.CourseApplication;
 import com.compass.uol.course.entities.UserEntity;
 
 import io.jsonwebtoken.Claims;
@@ -78,19 +75,5 @@ public class JwtService {
 		return (String) getClaims(token).getSubject();
 	}
 	
-	public static void main(String[] arg) {
-		
-		ConfigurableApplicationContext context = SpringApplication.run(CourseApplication.class);
-		
-		JwtService service = context.getBean(JwtService.class);
-		UserEntity user = new UserEntity();
-		user.setEmail("BrunoPressi2012@gmail.com");
-		String token = service.generateToken(user);
-		System.out.println(token);
-		
-		System.out.println("Token is valid? " + service.tokenIsValid(token));
-		System.out.println("User Data: " + service.getUserEmail(token));
-		
-	}
 	
 }
