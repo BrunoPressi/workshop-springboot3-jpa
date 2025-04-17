@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.compass.uol.course.CourseApplication;
 import com.compass.uol.course.entities.UserEntity;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -26,6 +28,9 @@ public class JwtService {
 	
 	// @Value("${security.jwt.signature-key}")
 	 //private String signatureKey;
+	
+	private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
 		
 	public String generateToken(UserEntity user ) {
 		
@@ -33,15 +38,44 @@ public class JwtService {
 		LocalDateTime expirationDateTime = LocalDateTime.now().plusMinutes(expiration);
 		Instant instant = expirationDateTime.atZone(ZoneId.systemDefault()).toInstant();
 		Date date = Date.from(instant);
-		
-		Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+				
+		/*HashMap<String, Object> claims = new HashMap<>();
+		claims.put("roles", "admin");*/
 		
 		return Jwts.builder()
                 .setSubject(user.getEmail()) // Sujeito do token
                 .setExpiration(date) // Data de expiração
-                .claim("role", "user") // Exemplo de claim customizado
+                //.setClaims(claims) // claims customizadas
                 .signWith(key, SignatureAlgorithm.HS512) // Assinatura do token
                 .compact(); // Geração final do token compactado
+	}
+	
+	private Claims getClaims(String token) throws ExpiredJwtException {
+	    return Jwts
+	            .parserBuilder()  // Usando parserBuilder ao invés de parser
+	            .setSigningKey(key)  // Defina a chave de assinatura
+	            .build()
+	            .parseClaimsJws(token)  // Parse o JWT e extraia os claims
+	            .getBody();  // Retorne os claims
+	}
+	
+	public boolean tokenIsValid(String token) {
+		try {
+			Claims claims = getClaims(token);
+			Date date = claims.getExpiration();
+			
+			LocalDateTime dateExpiration = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			
+			return !LocalDateTime.now().isAfter(dateExpiration);
+			
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
+	
+	public String getUserData(String token) throws ExpiredJwtException{
+		return (String) getClaims(token).getSubject();
 	}
 	
 	public static void main(String[] arg) {
@@ -54,6 +88,8 @@ public class JwtService {
 		String token = service.generateToken(user);
 		System.out.println(token);
 		
+		System.out.println("Token is valid? " + service.tokenIsValid(token));
+		System.out.println("User Data: " + service.getUserData(token));
 		
 	}
 	
