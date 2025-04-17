@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.compass.uol.course.entities.Order;
-import com.compass.uol.course.entities.User;
+import com.compass.uol.course.entities.UserEntity;
 import com.compass.uol.course.repositories.OrderRepository;
 
 @Service

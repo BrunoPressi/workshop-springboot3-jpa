@@ -13,7 +13,7 @@ import com.compass.uol.course.entities.Order;
 import com.compass.uol.course.entities.OrderItem;
 import com.compass.uol.course.entities.Payment;
 import com.compass.uol.course.entities.Product;
-import com.compass.uol.course.entities.User;
+import com.compass.uol.course.entities.UserEntity;
 import com.compass.uol.course.entities.enums.OrderStatus;
 import com.compass.uol.course.repositories.CategoryRepository;
 import com.compass.uol.course.repositories.OrderItemRepository;
@@ -42,8 +42,9 @@ public class TestConfig implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		User u1 = new User(null, "Maria Brown", "maria@gmail.com", "988888888", "123456");
-		User u2 = new User(null, "Alex Green", "alex@gmail.com", "977777777", "123456");
+		UserEntity u1 = new UserEntity(null, "Maria Brown", "maria@gmail.com", "988888888", "$2a$10$fSLoE6HWE4cbBxe8kOSkp.IYZ0LJlm4/d/zTmgtn7a3DO9kyo.T/W"
+				+ "");
+		UserEntity u2 = new UserEntity(null, "Alex Green", "alex@gmail.com", "977777777", "$2a$10$fSLoE6HWE4cbBxe8kOSkp.IYZ0LJlm4/d/zTmgtn7a3DO9kyo.T/W");
 
 		Order o1 = new Order(null, Instant.parse("2019-06-20T19:53:07Z"), OrderStatus.PAID, u1);
 		Order o2 = new Order(null, Instant.parse("2019-07-21T03:42:10Z"), OrderStatus.WAITING_PAYMENT, u2);

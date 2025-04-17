@@ -5,9 +5,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.compass.uol.course.entities.User;
+import com.compass.uol.course.entities.UserEntity;
 import com.compass.uol.course.repositories.UserRepository;
 import com.compass.uol.course.services.exception.DatabaseException;
 import com.compass.uol.course.services.exception.ResourceNotFoundException;
@@ -15,21 +19,21 @@ import com.compass.uol.course.services.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository repository;
 
-	public List<User> findAll() {
+	public List<UserEntity> findAll() {
 		return repository.findAll();
 	}
 
-	public User findById(Long id) {
-		Optional<User> obj = repository.findById(id);
+	public UserEntity findById(Long id) {
+		Optional<UserEntity> obj = repository.findById(id);
 		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 
-	public User insert(User obj) {
+	public UserEntity insert(UserEntity obj) {
 		return repository.save(obj);
 	}
 
@@ -44,8 +48,8 @@ public class UserService {
 		}
 	}
 
-	public User update(Long id, User obj) {
-		User entity = null;
+	public UserEntity update(Long id, UserEntity obj) {
+		UserEntity entity = null;
 		try {
 			entity = repository.getReferenceById(id);
 			updateData(entity, obj);
@@ -56,10 +60,26 @@ public class UserService {
 		return repository.save(entity);
 	}
 
-	private void updateData(User entity, User obj) {
+	private void updateData(UserEntity entity, UserEntity obj) {
 		entity.setName(obj.getName());
 		entity.setEmail(obj.getEmail());
 		entity.setFone(obj.getFone());
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
+		UserEntity user = repository.findByName(username)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		
+		String[] roles = user.isAdmin() ? new String[] {"ADMIN", "USER"} : new String[] {"USER"};
+		
+		return User
+				.builder()
+				.username(user.getName())
+				.password(user.getPassword())
+				.roles(roles)
+				.build();
 	}
 
 }

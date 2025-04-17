@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "tb_user")
-public class User implements Serializable {
+public class UserEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,15 +41,17 @@ public class User implements Serializable {
 	@JsonIgnore
 	@OneToMany(mappedBy = "client")
 	private List<Order> orders = new ArrayList<>();
+	
+	private boolean admin;
 
-	public User() {
+	public UserEntity() {
 	}
 
 	public List<Order> getOrders() {
 		return orders;
 	}
 
-	public User(Long id, String name, String email, String fone, String password) {
+	public UserEntity(Long id, String name, String email, String fone, String password) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
@@ -110,8 +112,12 @@ public class User implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		UserEntity other = (UserEntity) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	public boolean isAdmin() {
+		return this.admin;
 	}
 
 }

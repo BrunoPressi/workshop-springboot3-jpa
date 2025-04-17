@@ -38,7 +38,7 @@ public class Order implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "client_id")
-	private User client;
+	private UserEntity client;
 
 	@OneToMany(mappedBy = "id.order")
 	//@NotEmptyList(message = "Lista de itens do pedido não pode ser vazia")
@@ -50,7 +50,7 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-	public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
+	public Order(Long id, Instant moment, OrderStatus orderStatus, UserEntity client) {
 		this.id = id;
 		this.moment = moment;
 		setOrderStatus(orderStatus);
@@ -83,11 +83,11 @@ public class Order implements Serializable {
 		}
 	}
 
-	public User getClient() {
+	public UserEntity getClient() {
 		return client;
 	}
 
-	public void setClient(User user) {
+	public void setClient(UserEntity user) {
 		this.client = user;
 	}
 
