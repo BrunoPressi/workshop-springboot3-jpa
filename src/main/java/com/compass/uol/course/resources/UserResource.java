@@ -27,10 +27,15 @@ import com.compass.uol.course.security.jwt.JwtService;
 import com.compass.uol.course.services.UserService;
 import com.compass.uol.course.services.exception.InvalidPasswordException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value="/users")
+@Tag(description = "Controller to manage user operations", name = "User Controller")
 public class UserResource {
 	
 	@Autowired
@@ -49,6 +54,12 @@ public class UserResource {
 	}
 	
 	@GetMapping(value = "/{id}")
+	@Operation(description = "Get details from user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+        })
 	public ResponseEntity<UserEntity> findById(@PathVariable Long id) {
 		UserEntity u = service.findById(id);
 		return ResponseEntity.ok().body(u);
